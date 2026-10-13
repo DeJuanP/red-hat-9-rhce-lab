@@ -1,0 +1,11 @@
+---
+- name: Create message of the day
+  hosts: all
+  become: true
+
+  tasks:
+   - name: Create MOTD.yml
+     ansible.builtin.template:
+      src: files/motd.j2
+      dest: /etc/motd
+      mode: '0644'

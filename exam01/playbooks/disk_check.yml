@@ -1,0 +1,14 @@
+---
+- name: Check disk usage
+  hosts: all
+  become: true
+
+  tasks:
+   - name: Run disk usage command
+     ansible.builtin.command:
+      cmd: df -h /
+     register: disk_usage
+
+   - name: Print output
+     ansible.builtin.debug:
+      var: disk_usage.stdout_lines[1].split()[4]

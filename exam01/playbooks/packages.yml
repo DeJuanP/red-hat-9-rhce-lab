@@ -1,0 +1,24 @@
+---
+- name: Install relevent packages
+  hosts: datacenter
+  become: true
+
+  vars:
+   packages:
+    - name: httpd
+      group: web
+    - name: mariadb-server
+      group: db
+    - name: vsftpd
+      group: proxy
+
+  tasks:
+   - name: Install packages
+     ansible.builtin.dnf:
+      name: "{{ item.name }}"
+      state: present
+     loop: "{{ packages }}"
+     when: 
+      - item.group in group_names
+      - item.name != 'mariadb-server' or ansible_memtotal_mb > 1000
+##      - item.name == 'mariadb-server' and ansible_memtotal_mb < 1000

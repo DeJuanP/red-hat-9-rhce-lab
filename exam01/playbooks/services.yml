@@ -1,0 +1,36 @@
+---
+- name: Configure service and firewall
+  hosts: web
+  become: true
+  
+  tasks:
+   - name: Install and enable httpd
+     ansible.builtin.dnf:
+      name: httpd
+      state: present
+
+   - name: Start service httpd, if not started
+     ansible.builtin.service:
+      name: httpd
+      state: started
+      enabled: yes
+
+   - name: Open ports for http and https
+     ansible.posix.firewalld:
+      service: "{{ item }}"
+      state: enabled
+      permanent: true
+      immediate: true
+     loop:
+      - http
+      - https
+
+- name: Ensure firewalld is running on all machines
+  hosts: datacenter
+  become: true
+  
+  tasks:
+   - name: Enabled firewalld
+     ansible.builtin.service:
+       name: firewalld
+       enabled: yes

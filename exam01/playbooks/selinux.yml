@@ -1,0 +1,28 @@
+---
+- name: Security and SELinux
+  hosts: datacenter
+  become: true
+
+  tasks:
+   - name: Enable SELinux
+     ansible.posix.selinux:
+      policy: targeted
+      state: enforcing
+   
+   - name: Install python library
+     ansible.builtin.dnf:
+      name: python3-libsemanage
+      state: present
+
+   - name: Ensure SELinux is set to enforcing mode
+     ansible.builtin.lineinfile:
+      path: /etc/selinux/config
+      regexp: '^SELINUX='
+      line: SELINUX=enforcing
+
+   - name: Set httpd_can_network_connect flag on and keep it persistent across reboots
+     ansible.posix.seboolean:
+      name: httpd_can_network_connect
+      state: true
+      persistent: true
+     when: "'web' in group_names"

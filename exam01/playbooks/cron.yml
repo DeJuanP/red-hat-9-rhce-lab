@@ -1,0 +1,14 @@
+---
+- name: Scheduled Tasks
+  hosts: db
+  become: true
+
+  tasks:
+   - name: Run weekly report
+     ansible.builtin.cron:
+      name: "Weekly cron report"
+      weekday: "1"
+      minute: "0"
+      hour: "6"
+      user: root
+      job: "/usr/local/bin/weekly_report.sh"

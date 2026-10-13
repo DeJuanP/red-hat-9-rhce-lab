@@ -1,0 +1,13 @@
+---
+- name: Create placeholder for vsftpd
+  hosts: proxy
+  become: true
+  vars_files:
+   - secrets.yml
+
+  tasks:
+   - name: Add comment line to vsftpd.conf
+     ansible.builtin.lineinfile:
+      path: /etc/vsftpd/vsftpd.conf
+      line: "# The ftp admin paswoord is: {{ ftp_admin_pass }}"
+     no_log: true

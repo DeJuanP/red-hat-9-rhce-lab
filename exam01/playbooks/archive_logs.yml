@@ -1,0 +1,10 @@
+---
+- name: Archive logs
+  hosts: datacenter
+  become: true
+
+  tasks:
+   - name: Compress /var/log/audit
+     community.general.archive:
+      path: /var/log/audit
+      dest: /tmp/audit_backup_{{ inventory_hostname }}.tar.gz

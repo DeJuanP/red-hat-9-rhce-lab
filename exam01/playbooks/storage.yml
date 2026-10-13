@@ -1,0 +1,40 @@
+---
+- name: Configure storage and filesystems
+  hosts: db
+  become: true
+  
+  tasks:
+   - name: Partition storage drive
+     community.general.parted:
+      device: /dev/sdb
+      number: 1
+      state: present
+   
+   - name: Create volume group
+     community.general.lvg:
+      vg: dbdata_vg
+      pvs: /dev/sdb1
+
+   - name: Check if logical volume exists
+     ansible.builtin.stat:
+      path: /dev/dbdata_vg/dbdata_lv
+     register: lv_check
+
+   - name: Create a logical volume
+     community.general.lvol:
+      vg: dbdata_vg
+      lv: dbdata_lv
+      size: 50%FREE
+     when: not lv_check.stat.exists
+
+   - name: Create a xfs filesystem on /dev/sdb1
+     community.general.filesystem:
+      fstype: xfs
+      dev: /dev/dbdata_vg/dbdata_lv
+
+   - name: Mount up device 
+     ansible.posix.mount:
+      path: /dbdata
+      src: /dev/dbdata_vg/dbdata_lv
+      fstype: xfs
+      state: mounted            

@@ -1,0 +1,21 @@
+---
+- name: Site Playbook roles section
+  hosts: web
+  become: true
+
+  roles:
+   - webserver
+
+- name: Site Playbook playbook
+  hosts: all
+  become: true
+
+- name: Import storage playbook
+  ansible.builtin.import_playbook: playbooks/storage.yml
+
+- name: Import users playbook
+  ansible.builtin.import_playbook: playbooks/users.yml
+  
+- name: Import sshd_hardening 
+  ansible.builtin.import_playbook: playbooks/sshd_hardening-2.yml
+  

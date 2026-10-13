@@ -1,0 +1,26 @@
+---
+- name: File content and management
+  hosts: datacenter
+  become: true
+
+  vars:
+   input_name:
+    - name: '^#?PermitRootLogin'
+      input: PermitRootLogin no
+    - name: '^#?PasswordAuthentication'
+      input: PasswordAuthentication no
+
+  tasks:
+   - name: Update sshd_config file
+     ansible.builtin.lineinfile:
+      path: /etc/ssh/sshd_config
+      regexp: "{{ item.name }}"
+      line: "{{ item.input }}"
+     loop: "{{ input_name }}"
+     notify: Restart sshd
+
+  handlers:
+   - name: Restart sshd
+     ansible.builtin.service:
+      name: sshd
+      state: restarted

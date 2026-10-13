@@ -1,0 +1,32 @@
+---
+- name: Create users and groups
+  hosts: web
+  become: true
+ 
+  tasks: 
+   - name: Create web admins group
+     ansible.builtin.group:
+      name: webadmins
+      gid: 4000
+
+   - name: Create users
+     ansible.builtin.user:
+      name: "{{ item }}"
+      shell: /bin/bash
+      groups: webadmins
+      password_lock: true
+     loop:
+      - admin1
+      - admin2
+
+   - name: Configure users for ssh-key auth only
+     ansible.posix.authorized_key:
+      user: "{{ item }}"
+      state: present
+      key: "{{ lookup('file', '/home/ansible/claude-2/files/id_ed25519.pub') }}"
+     loop:
+      - admin1
+      - admin2
+
+
+   

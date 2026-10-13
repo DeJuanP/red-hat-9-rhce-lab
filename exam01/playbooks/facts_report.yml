@@ -1,0 +1,20 @@
+---
+- name: Create facts report on all host in datacenter
+  hosts: datacenter
+  become: true
+  gather_facts: true
+
+  tasks:
+   - name: Gather facts in report.yml
+     ansible.builtin.copy:
+      dest: /tmp/factsreport.txt
+      mode: '0644'
+      content: |
+       {% for host in ansible_play_hosts %}
+        Hostname: {{ hostvars[host]['ansible_hostname'] }}
+        Total Memory: {{ hostvars[host]['ansible_memtotal_mb'] }}
+        Default IP Address: {{ hostvars[host]['ansible_default_ipv4']['address'] }}
+        
+       {% endfor %}
+     run_once: true
+     delegate_to: localhost

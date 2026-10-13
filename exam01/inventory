@@ -1,0 +1,14 @@
+[web]
+node1 ansible_host=192.168.10.175
+node2 ansible_host=192.168.10.115
+
+[db]
+node3 ansible_host=192.168.10.121
+
+[proxy]
+node4 ansible_host=192.168.10.187
+
+[datacenter:children]
+web
+db
+proxy

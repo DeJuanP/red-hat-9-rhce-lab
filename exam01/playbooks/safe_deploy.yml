@@ -1,0 +1,26 @@
+---
+- name: Create safe deployment
+  hosts: all
+  become: true
+
+  tasks:
+    - name: Create safe configuration play
+      block:
+        - name: Copy config file
+          ansible.builtin.copy:
+           src: files/app.conf
+           dest: /etc/myapp.app.conf
+           mode: '0644'
+
+      rescue:
+        - name: Output message
+          ansible.builtin.debug:
+           msg: "The file did not copy successfully"
+
+      always:
+        - name: Append log
+          ansible.builtin.lineinfile:
+           path: /tmp/log-transactions
+           line: deployment attempt finished
+           create: yes
+          delegate_to: localhost
